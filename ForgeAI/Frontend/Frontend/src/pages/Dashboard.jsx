@@ -1,10 +1,8 @@
 import {
-  Activity,
   AlertTriangle,
   BarChart3,
   Factory,
   Percent,
-  ShieldCheck,
 } from 'lucide-react'
 
 import PageContainer from '../components/layout/PageContainer'
