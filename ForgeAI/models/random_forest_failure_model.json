@@ -1,0 +1,19 @@
+{
+  "model_type": "RandomForestClassifier",
+  "model_file": "random_forest_failure_model.pkl",
+  "feature_file": "feature_columns.pkl",
+  "feature_columns": [
+    "Air temperature [K]",
+    "Process temperature [K]",
+    "Temperature_difference",
+    "Rotational speed [rpm]",
+    "Torque [Nm]",
+    "Tool wear [min]"
+  ],
+  "classes": [
+    0,
+    1
+  ],
+  "n_features_in": 6,
+  "decision_threshold": 0.5
+}
