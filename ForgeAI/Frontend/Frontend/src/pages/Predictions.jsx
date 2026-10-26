@@ -7,9 +7,10 @@ import PredictionResultView from '../components/predictions/PredictionResultView
 import { DEFAULT_SENSOR_VALUES } from '../data/predictions/prediction.mock'
 import { predictionService } from '../services/predictionService'
 import { validateField, validateSensorForm } from '../lib/predictionValidation'
+import { useExplainability } from '../hooks/useExplainability'
 
 /**
- * ForgeAI — Prediction Workspace Page (Part 6)
+ * ForgeAI — Prediction Workspace Page (Part 6 + Part 7)
  *
  * Engineering workstation for submitting machine telemetry and evaluating
  * failure probabilities using predictive model inference.
@@ -17,6 +18,10 @@ import { validateField, validateSensorForm } from '../lib/predictionValidation'
  * Implements seamless transition from INPUT mode to the upgraded
  * ANALYSIS RESULT view upon inference success, maintaining full operational
  * traceability and immediate ability to re-analyze.
+ *
+ * Part 7 adds SHAP-based model explainability that can be accessed
+ * from the prediction result view. Explanation state is managed
+ * separately from prediction state via the useExplainability hook.
  */
 function Predictions() {
   const [values, setValues] = useState({ ...DEFAULT_SENSOR_VALUES })
@@ -27,6 +32,9 @@ function Predictions() {
   const [analyzedSnapshot, setAnalyzedSnapshot] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [activePreset, setActivePreset] = useState('nominal')
+
+  // Part 7: Explainability state (separate from prediction state)
+  const explainability = useExplainability(analyzedSnapshot)
 
   /**
    * Field value change handler
@@ -85,7 +93,8 @@ function Predictions() {
     setPredictionResult(null)
     setAnalyzedSnapshot(null)
     setErrorMessage('')
-  }, [])
+    explainability.resetExplanation()
+  }, [explainability])
 
   /**
    * Reset workspace to initial default demo state
@@ -99,7 +108,8 @@ function Predictions() {
     setAnalyzedSnapshot(null)
     setErrorMessage('')
     setActivePreset('nominal')
-  }, [])
+    explainability.resetExplanation()
+  }, [explainability])
 
   /**
    * Return from Analysis Result view back to Input Form mode,
@@ -107,7 +117,8 @@ function Predictions() {
    */
   const handleAnalyzeAgain = useCallback(() => {
     setPredictionState('idle')
-  }, [])
+    explainability.resetExplanation()
+  }, [explainability])
 
   /**
    * Submit sensor readings for AI inference
@@ -145,6 +156,8 @@ function Predictions() {
       setErrors({})
       setErrorMessage('')
       setPredictionState('processing')
+      // Reset explainability when starting a new prediction
+      explainability.resetExplanation()
 
       try {
         // Convert string inputs to parsed numbers for the prediction service
@@ -175,7 +188,7 @@ function Predictions() {
         setPredictionState('error')
       }
     },
-    [predictionState, values],
+    [predictionState, values, explainability],
   )
 
   return (
@@ -192,6 +205,7 @@ function Predictions() {
           <PredictionResultView
             result={predictionResult}
             sensorSnapshot={analyzedSnapshot || values}
+            explainability={explainability}
             onAnalyzeAgain={handleAnalyzeAgain}
             onEditInputs={handleAnalyzeAgain}
             onReset={handleReset}

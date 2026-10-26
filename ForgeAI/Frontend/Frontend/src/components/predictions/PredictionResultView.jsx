@@ -14,6 +14,7 @@ import RiskBadge from '../ui/RiskBadge'
 import ProbabilityRiskScale from './ProbabilityRiskScale'
 import AnalyzedConditionsSnapshot from './AnalyzedConditionsSnapshot'
 import OperationalAssessmentCard from './OperationalAssessmentCard'
+import ExplainabilityPanel from '../explainability/ExplainabilityPanel'
 import { config, getRiskAssessment } from '../../lib/config'
 import {
   formatProbabilityPercent,
@@ -22,7 +23,7 @@ import {
 import { cn } from '../../lib/utils'
 
 /**
- * ForgeAI — PredictionResultView (Part 6)
+ * ForgeAI — PredictionResultView (Part 6 + Part 7 Explainability)
  *
  * Upgraded, professional industrial AI result interface.
  * When inference completes, the workspace transitions from INPUT to this ANALYSIS RESULT view.
@@ -37,6 +38,7 @@ import { cn } from '../../lib/utils'
  * 7. Analyzed conditions snapshot (all 5 sensors + frontend-derived temperature difference)
  * 8. Traceability from Machine Conditions -> AI Prediction -> Risk Assessment
  * 9. Clear actions to run another analysis or modify telemetry
+ * 10. SHAP-based model explainability panel (Part 7)
  *
  * @param {{
  *   result: {
@@ -52,6 +54,15 @@ import { cn } from '../../lib/utils'
  *     torque: number|string,
  *     tool_wear: number|string,
  *   },
+ *   explainability: {
+ *     explanationStatus: 'idle'|'loading'|'success'|'unavailable'|'error',
+ *     explanation: Object|null,
+ *     errorMessage: string|null,
+ *     isExpanded: boolean,
+ *     requestExplanation: () => void,
+ *     retryExplanation: () => void,
+ *     toggleExpanded: () => void,
+ *   },
  *   onAnalyzeAgain: () => void,
  *   onEditInputs?: () => void,
  *   onReset?: () => void,
@@ -60,6 +71,7 @@ import { cn } from '../../lib/utils'
 function PredictionResultView({
   result,
   sensorSnapshot,
+  explainability,
   onAnalyzeAgain,
   onEditInputs,
   onReset,
@@ -241,7 +253,20 @@ function PredictionResultView({
           </div>
         </div>
 
-        {/* 5. Bottom Action Controls */}
+        {/* 5. Model Explainability Section (Part 7) */}
+        {explainability && (
+          <ExplainabilityPanel
+            explanationStatus={explainability.explanationStatus}
+            explanation={explainability.explanation}
+            errorMessage={explainability.errorMessage}
+            isExpanded={explainability.isExpanded}
+            onRequestExplanation={explainability.requestExplanation}
+            onRetry={explainability.retryExplanation}
+            onToggle={explainability.toggleExpanded}
+          />
+        )}
+
+        {/* 6. Bottom Action Controls */}
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/60 bg-card/60 p-4">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span className="size-2 rounded-full bg-success" aria-hidden="true" />
