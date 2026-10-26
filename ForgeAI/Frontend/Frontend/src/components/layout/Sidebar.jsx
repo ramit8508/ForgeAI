@@ -1,30 +1,38 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { SlidersHorizontal, X } from 'lucide-react'
 import { navigationSections, systemNavigation } from '../../lib/navigation'
 import { config } from '../../lib/config'
 
 function NavItem({ item, onClick }) {
   const { label, icon: Icon, path } = item
+  const { pathname } = useLocation()
+  const isCustomActive =
+    (path === '/machines' && pathname.startsWith('/machines')) ||
+    (path === '/predictions' && pathname.startsWith('/predictions'))
 
   return (
     <NavLink
       to={path}
       onClick={onClick}
-      className={({ isActive }) =>
-        `flex items-center gap-3 rounded-md border px-3 py-2.5 text-sm font-medium transition-colors ${
-          isActive
+      className={({ isActive }) => {
+        const active = isActive || isCustomActive
+        return `flex items-center gap-3 rounded-md border px-3 py-2.5 text-sm font-medium transition-colors ${
+          active
             ? 'border-primary/20 bg-primary/8 text-primary'
             : 'border-transparent text-secondary-foreground hover:bg-card hover:text-foreground'
         }`
-      }
+      }}
       aria-label={label}
     >
-      {({ isActive }) => (
-        <>
-          <Icon size={17} strokeWidth={isActive ? 2 : 1.8} />
-          <span>{label}</span>
-        </>
-      )}
+      {({ isActive }) => {
+        const active = isActive || isCustomActive
+        return (
+          <>
+            <Icon size={17} strokeWidth={active ? 2 : 1.8} />
+            <span>{label}</span>
+          </>
+        )
+      }}
     </NavLink>
   )
 }

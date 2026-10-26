@@ -1,36 +1,92 @@
-import { Wrench } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import PageContainer from '../components/layout/PageContainer'
 import PageHeader from '../components/layout/PageHeader'
-import Card from '../components/ui/Card'
+import MachineSummary from '../components/machines/MachineSummary'
+import MachineFilters from '../components/machines/MachineFilters'
+import MachineTable from '../components/machines/MachineTable'
+import { useMachines } from '../hooks/useMachines'
 
+/**
+ * ForgeAI — Machines Page (Part 8)
+ *
+ * Industrial AI machine intelligence workstation:
+ * - Fleet health & risk summary
+ * - Multi-axis filtering by operational status and failure risk
+ * - Real-time client-side search across ID, name, location
+ * - Dense desktop operations table and touch-friendly mobile card view
+ * - Seamless navigation to machine diagnostics and prediction workspace
+ */
 function Machines() {
+  const navigate = useNavigate()
+  const {
+    machines,
+    filteredMachines,
+    fleetSummary,
+    loading,
+    searchQuery,
+    setSearchQuery,
+    riskFilter,
+    setRiskFilter,
+    statusFilter,
+    setStatusFilter,
+    sortBy,
+    setSortBy,
+    sortOrder,
+    setSortOrder,
+    resetFilters,
+  } = useMachines()
+
+  const handleSelectMachine = (machineId) => {
+    navigate(`/machines/${machineId}`)
+  }
+
+  const handleToggleSortOrder = () => {
+    setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+  }
+
   return (
     <PageContainer>
+      {/* Page Header */}
       <PageHeader
         breadcrumb="Machines"
-        tag="Fleet management"
-        title="Machines"
-        description="Machine inventory, health monitoring, and individual machine diagnostics."
+        tag="Fleet Intelligence"
+        title="Machine Fleet"
+        description="Monitored industrial machinery inventory, operational running states, and predictive failure risk."
       />
 
-      <Card className="mt-7 p-10 sm:p-14">
-        <div className="flex flex-col items-center gap-5 text-center">
-          <span className="grid size-14 place-items-center rounded-lg bg-muted text-muted-foreground">
-            <Wrench size={26} strokeWidth={1.5} />
-          </span>
-          <div className="grid gap-2">
-            <h2 className="text-base font-semibold">Machine monitoring</h2>
-            <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-              Machine inventory and health information will appear here.
-              This module will display individual machine status, sensor readings,
-              failure probability, and prediction history.
-            </p>
-          </div>
-          <span className="mt-2 rounded-full border border-border px-3 py-1.5 font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
-            Coming in Phase 7
-          </span>
-        </div>
-      </Card>
+      {/* Fleet Summary KPIs */}
+      <div className="mt-6">
+        <MachineSummary summary={fleetSummary} />
+      </div>
+
+      {/* Search, Filter, Sort Controls */}
+      <div className="mt-6">
+        <MachineFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          riskFilter={riskFilter}
+          onRiskChange={setRiskFilter}
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          sortBy={sortBy}
+          onSortByChange={setSortBy}
+          sortOrder={sortOrder}
+          onToggleSortOrder={handleToggleSortOrder}
+          onReset={resetFilters}
+          totalCount={machines.length}
+          filteredCount={filteredMachines.length}
+        />
+      </div>
+
+      {/* Machine Fleet Table & Responsive Cards */}
+      <div className="mt-4">
+        <MachineTable
+          machines={filteredMachines}
+          loading={loading}
+          onSelect={handleSelectMachine}
+          onReset={resetFilters}
+        />
+      </div>
     </PageContainer>
   )
 }

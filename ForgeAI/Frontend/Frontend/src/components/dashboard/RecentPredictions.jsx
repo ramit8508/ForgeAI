@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Clock, ArrowRight, ShieldCheck, ShieldAlert } from 'lucide-react'
 import Card from '../ui/Card'
 import RiskBadge from '../ui/RiskBadge'
@@ -121,15 +122,14 @@ function RecentPredictions({ predictions = [] }) {
         <span className="text-sm text-muted-foreground">
           {predictions.length} prediction{predictions.length !== 1 ? 's' : ''} · Demo data
         </span>
-        <button
-          className="flex cursor-not-allowed items-center gap-1.5 text-sm text-muted-foreground opacity-50"
-          type="button"
-          disabled
-          aria-label="View all predictions — coming soon"
+        <Link
+          to="/predictions/history"
+          className="flex items-center gap-1.5 text-sm text-primary hover:underline font-medium transition-colors"
+          aria-label="View all predictions in Prediction History"
         >
           View all
           <ArrowRight size={15} strokeWidth={1.8} />
-        </button>
+        </Link>
       </div>
     </Card>
   )

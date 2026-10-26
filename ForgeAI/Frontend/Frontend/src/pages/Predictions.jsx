@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
 import PageContainer from '../components/layout/PageContainer'
 import PredictionHeader from '../components/predictions/PredictionHeader'
 import SensorInputForm from '../components/predictions/SensorInputForm'
@@ -8,9 +9,10 @@ import { DEFAULT_SENSOR_VALUES } from '../data/predictions/prediction.mock'
 import { predictionService } from '../services/predictionService'
 import { validateField, validateSensorForm } from '../lib/predictionValidation'
 import { useExplainability } from '../hooks/useExplainability'
+import PredictionNavTabs from '../components/predictions/PredictionNavTabs'
 
 /**
- * ForgeAI — Prediction Workspace Page (Part 6 + Part 7)
+ * ForgeAI — Prediction Workspace Page (Part 6 + Part 7 + Part 8)
  *
  * Engineering workstation for submitting machine telemetry and evaluating
  * failure probabilities using predictive model inference.
@@ -19,19 +21,35 @@ import { useExplainability } from '../hooks/useExplainability'
  * ANALYSIS RESULT view upon inference success, maintaining full operational
  * traceability and immediate ability to re-analyze.
  *
- * Part 7 adds SHAP-based model explainability that can be accessed
- * from the prediction result view. Explanation state is managed
- * separately from prediction state via the useExplainability hook.
+ * Part 7 adds SHAP-based model explainability.
+ * Part 8 supports pre-populating telemetry from machine detail inspection.
  */
 function Predictions() {
-  const [values, setValues] = useState({ ...DEFAULT_SENSOR_VALUES })
+  const location = useLocation()
+  const machineContext = location.state?.machineId ? location.state : null
+
+  const [values, setValues] = useState(() => {
+    if (location.state?.sensorValues) {
+      return { ...location.state.sensorValues }
+    }
+    return { ...DEFAULT_SENSOR_VALUES }
+  })
   const [touched, setTouched] = useState({})
   const [errors, setErrors] = useState({})
   const [predictionState, setPredictionState] = useState('idle') // 'idle' | 'validating' | 'processing' | 'success' | 'error'
   const [predictionResult, setPredictionResult] = useState(null)
   const [analyzedSnapshot, setAnalyzedSnapshot] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
-  const [activePreset, setActivePreset] = useState('nominal')
+  const [activePreset, setActivePreset] = useState(location.state?.sensorValues ? null : 'nominal')
+
+  const [prevLocationKey, setPrevLocationKey] = useState(location.key)
+  if (location.key !== prevLocationKey) {
+    setPrevLocationKey(location.key)
+    if (location.state?.sensorValues) {
+      setValues({ ...location.state.sensorValues })
+      setActivePreset(null)
+    }
+  }
 
   // Part 7: Explainability state (separate from prediction state)
   const explainability = useExplainability(analyzedSnapshot)
@@ -193,11 +211,28 @@ function Predictions() {
 
   return (
     <PageContainer>
+      {/* Navigation Switcher Tabs */}
+      <PredictionNavTabs />
+
       {/* Workspace Header with Preset Selector */}
       <PredictionHeader
         activePreset={activePreset}
         onSelectPreset={handleSelectPreset}
       />
+
+      {/* Machine Context Banner if loaded from /machines/:machineId */}
+      {machineContext && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-primary/30 bg-primary/10 px-4 py-2.5 text-xs text-foreground">
+          <div className="flex items-center gap-2">
+            <span className="font-mono font-bold text-primary">{machineContext.machineId}</span>
+            <span className="text-muted-foreground">•</span>
+            <span>Pre-loaded telemetry snapshot from {machineContext.machineName || machineContext.machineId}</span>
+          </div>
+          <span className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
+            Fleet Context Active
+          </span>
+        </div>
+      )}
 
       {/* Main Workspace: Transitions between INPUT and ANALYSIS RESULT */}
       {predictionState === 'success' && predictionResult ? (

@@ -5,7 +5,13 @@ import StatusIndicator from '../ui/StatusIndicator'
 
 function Header({ onMenuToggle }) {
   const { pathname } = useLocation()
-  const currentLabel = routeLabels[pathname] || 'Overview'
+  const currentLabel =
+    routeLabels[pathname] ||
+    (pathname.startsWith('/machines')
+      ? 'Machines'
+      : pathname.startsWith('/predictions')
+        ? 'Predictions'
+        : 'Overview')
 
   return (
     <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-border bg-background/95 px-4 backdrop-blur-sm sm:px-6">
@@ -50,13 +56,17 @@ function Header({ onMenuToggle }) {
           <NavLink
             to={item.path}
             key={item.id}
-            className={({ isActive }) =>
-              `relative flex h-full items-center px-3.5 text-sm font-medium transition-colors hover:text-foreground ${
-                isActive
+            className={({ isActive }) => {
+              const active =
+                isActive ||
+                (item.path === '/machines' && pathname.startsWith('/machines')) ||
+                (item.path === '/predictions' && pathname.startsWith('/predictions'))
+              return `relative flex h-full items-center px-3.5 text-sm font-medium transition-colors hover:text-foreground ${
+                active
                   ? 'text-foreground after:absolute after:bottom-0 after:left-3 after:right-3 after:h-[2px] after:rounded-full after:bg-primary'
                   : 'text-muted-foreground'
               }`
-            }
+            }}
           >
             {item.label}
           </NavLink>
