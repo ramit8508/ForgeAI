@@ -65,7 +65,7 @@ function ExplainabilityPanel({
             type="button"
             variant="secondary"
             onClick={onRequestExplanation}
-            className="gap-2 text-xs uppercase tracking-[0.06em]"
+            className="gap-2 text-sm uppercase tracking-[0.06em]"
             aria-label="Explain this prediction using SHAP model analysis"
           >
             <Brain size={15} aria-hidden="true" />
@@ -98,7 +98,7 @@ function ExplainabilityPanel({
                 <h3 className="text-sm font-semibold tracking-tight text-foreground">
                   Model Explanation
                 </h3>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {isLoading && 'Analyzing model contribution…'}
                   {isSuccess && `${explanation?.features?.length || 0} features analyzed`}
                   {isUnavailable && 'Explanation not yet available'}
@@ -116,12 +116,12 @@ function ExplainabilityPanel({
                 />
               )}
               {isSuccess && (
-                <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 font-mono text-[10px] font-medium text-success border border-success/30">
+                <span                 className="hidden sm:inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 font-mono text-xs font-medium text-success border border-success/30">
                   Analysis complete
                 </span>
               )}
               {isError && (
-                <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-destructive/15 px-2 py-0.5 font-mono text-[10px] font-medium text-destructive border border-destructive/30">
+                <span                 className="hidden sm:inline-flex items-center gap-1 rounded-full bg-destructive/15 px-2 py-0.5 font-mono text-xs font-medium text-destructive border border-destructive/30">
                   Error
                 </span>
               )}
@@ -188,7 +188,7 @@ function LoadingState() {
         <p className="text-sm font-medium text-foreground">
           Analyzing model contribution…
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="mt-1 text-sm text-muted-foreground">
           Computing feature influence via SHAP analysis
         </p>
       </div>
@@ -204,7 +204,7 @@ function SuccessState({ explanation }) {
     <div className="space-y-5" data-testid="explainability-success">
       {/* Intro Text */}
       <div className="space-y-1">
-        <p className="text-xs text-muted-foreground leading-relaxed">
+        <p className="text-sm text-muted-foreground leading-relaxed">
           The following input features contributed most to this prediction.
           Features are ranked by absolute contribution magnitude.
         </p>
@@ -220,10 +220,10 @@ function SuccessState({ explanation }) {
       {/* Feature Contribution Section */}
       <div>
         <div className="flex items-center justify-between border-b border-border/50 pb-2 mb-3">
-          <h4 className="font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+          <h4 className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
             Feature Contribution
           </h4>
-          <div className="flex items-center gap-3 text-[10px] font-mono text-muted-foreground">
+          <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground">
             <span className="flex items-center gap-1">
               <span className="size-2 rounded-full bg-amber-400" aria-hidden="true" />
               Increases risk
@@ -261,7 +261,7 @@ function UnavailableState() {
         <p className="text-sm font-medium text-foreground">
           Model explanation not yet available
         </p>
-        <p className="mt-1 max-w-sm text-xs text-muted-foreground leading-relaxed">
+        <p className="mt-1 max-w-sm text-sm text-muted-foreground leading-relaxed">
           This prediction can be explained once model contribution data is available
           from the analysis service. The prediction result remains valid.
         </p>
@@ -287,7 +287,7 @@ function ErrorState({ errorMessage, onRetry }) {
         <p className="text-sm font-medium text-foreground">
           Explainability unavailable
         </p>
-        <p className="mt-1 max-w-sm text-xs text-muted-foreground leading-relaxed">
+        <p         className="mt-1 max-w-sm text-sm text-muted-foreground leading-relaxed">
           {errorMessage ||
             'The prediction was completed successfully, but model explanation data could not be retrieved.'}
         </p>
@@ -297,7 +297,7 @@ function ErrorState({ errorMessage, onRetry }) {
           type="button"
           variant="secondary"
           onClick={onRetry}
-          className="mt-1 gap-1.5 text-xs uppercase tracking-[0.06em]"
+          className="mt-1 gap-1.5 text-sm uppercase tracking-[0.06em]"
           aria-label="Retry loading model explanation"
         >
           <RotateCcw size={13} aria-hidden="true" />

@@ -1,7 +1,7 @@
 /**
  * ForgeAI — Explainability API service
  *
- * Consumes: POST /predict/explain  (future endpoint)
+ * Consumes: POST /predict/explain
  *
  * Request body: same sensor payload as /predict
  *
@@ -22,9 +22,8 @@
  *     ]
  *   }
  *
- * NOTE: This endpoint does NOT exist in the current FastAPI backend.
- * The service will fail cleanly with a structured error so the frontend
- * can render a proper "not available" state.
+ * The backend derives Temperature_difference from the five sensor values;
+ * it must not be sent by the client.
  */
 
 import { apiClient } from './client'

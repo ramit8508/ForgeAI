@@ -79,6 +79,39 @@ describe('explainabilityService', () => {
     expect(result.explanation.features[2].displayName).toBe('Rotational Speed')
   })
 
+  it('sends only the five backend sensor fields for an explanation request', async () => {
+    vi.mocked(postExplanation).mockResolvedValueOnce({
+      base_value: 0.012,
+      output_value: 0.084,
+      features: [
+        {
+          name: 'Temperature_difference',
+          display_name: 'Temperature Difference',
+          value: 10,
+          unit: 'K',
+          shap_value: 0.01,
+          direction: 'positive',
+        },
+      ],
+    })
+
+    await getExplanation({
+      air_temperature: 300,
+      process_temperature: 310,
+      rotational_speed: 1486,
+      torque: 38.9,
+      tool_wear: 106,
+    })
+
+    expect(postExplanation).toHaveBeenCalledWith({
+      air_temperature: 300,
+      process_temperature: 310,
+      rotational_speed: 1486,
+      torque: 38.9,
+      tool_wear: 106,
+    })
+  })
+
   it('returns "unavailable" when API responds with 404', async () => {
     vi.mocked(postExplanation).mockRejectedValueOnce(
       new ApiClientError('Not found', { kind: 'server', status: 404 }),

@@ -2,7 +2,7 @@
  * ForgeAI — Explainability Data Contract
  *
  * Defines the expected shape of the SHAP explanation data as it will be
- * consumed by the frontend once the backend exposes a /predict/explain endpoint.
+ * consumed by the frontend from the /predict/explain endpoint.
  *
  * This file is the authoritative reference for the data contract between
  * the FastAPI backend and the React frontend for explainability features.
@@ -96,6 +96,7 @@
 export const FEATURE_DISPLAY_MAP = Object.freeze({
   'Air temperature [K]': { displayName: 'Air Temperature', unit: 'K' },
   'Process temperature [K]': { displayName: 'Process Temperature', unit: 'K' },
+  Temperature_difference: { displayName: 'Temperature Difference', unit: 'K' },
   'Rotational speed [rpm]': { displayName: 'Rotational Speed', unit: 'rpm' },
   'Torque [Nm]': { displayName: 'Torque', unit: 'Nm' },
   'Tool wear [min]': { displayName: 'Tool Wear', unit: 'min' },

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import src.api.app as app_module
 from fastapi.testclient import TestClient
+import pytest
 
 from src.api.app import app
 
@@ -55,3 +57,68 @@ def test_invalid_machine_input_returns_client_error() -> None:
     invalid_input["Torque [Nm]"] = -10
     response = client.post("/predict", json=invalid_input)
     assert response.status_code == 422
+
+
+def test_explain_endpoint_returns_probability_scale_feature_contributions() -> None:
+    response = client.post("/predict/explain", json=NORMAL_INPUT)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert set(body) == {"base_value", "output_value", "features"}
+    assert 0 <= body["base_value"] <= 1
+    assert 0 <= body["output_value"] <= 1
+    assert [feature["name"] for feature in body["features"]] == [
+        "Air temperature [K]",
+        "Process temperature [K]",
+        "Temperature_difference",
+        "Rotational speed [rpm]",
+        "Torque [Nm]",
+        "Tool wear [min]",
+    ]
+    assert all(
+        set(feature)
+        == {"name", "display_name", "value", "unit", "shap_value", "direction"}
+        for feature in body["features"]
+    )
+    assert all(
+        feature["direction"] in {"positive", "negative"}
+        for feature in body["features"]
+    )
+
+
+def test_explain_endpoint_uses_failure_class_probability() -> None:
+    explanation = client.post("/predict/explain", json=NORMAL_INPUT).json()
+    prediction = client.post("/predict", json=NORMAL_INPUT).json()
+
+    assert explanation["output_value"] == pytest.approx(
+        prediction["failure_probability"], abs=0.000001
+    )
+    assert abs(
+        explanation["base_value"]
+        + sum(feature["shap_value"] for feature in explanation["features"])
+        - explanation["output_value"]
+    ) <= 0.0011
+
+
+def test_invalid_explain_input_returns_client_error() -> None:
+    invalid_input = dict(NORMAL_INPUT)
+    invalid_input["Torque [Nm]"] = -10
+
+    response = client.post("/predict/explain", json=invalid_input)
+
+    assert response.status_code == 422
+
+
+def test_explain_endpoint_hides_explainer_failures(monkeypatch) -> None:
+    class BrokenExplainer:
+        def explain(self, sensor_input: dict) -> dict:
+            raise app_module.ExplainabilityError("internal detail")
+
+    monkeypatch.setattr(app_module, "explainer", BrokenExplainer())
+
+    response = client.post("/predict/explain", json=NORMAL_INPUT)
+
+    assert response.status_code == 500
+    assert response.json() == {
+        "detail": "The prediction explanation service could not process the request."
+    }

@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field, confloat
 
+from src.models.explainability import ExplainabilityError, MachineFailureExplainer
 from src.models.inference import MachineFailurePredictor
 
 FiniteFloat = confloat(allow_inf_nan=False)
@@ -60,6 +61,25 @@ class PredictionResponse(BaseModel):
     risk_level: RiskLevel
 
 
+class ExplanationFeature(BaseModel):
+    """One model feature's probability-scale SHAP contribution."""
+
+    name: str
+    display_name: str
+    value: float
+    unit: str
+    shap_value: float
+    direction: Literal["positive", "negative"]
+
+
+class ExplanationResponse(BaseModel):
+    """Probability-scale explanation for the failure class."""
+
+    base_value: float
+    output_value: float
+    features: list[ExplanationFeature]
+
+
 app = FastAPI(
     title="ForgeAI Machine Failure API",
     description=(
@@ -96,6 +116,7 @@ def _create_predictor() -> MachineFailurePredictor | None:
 
 
 predictor = _create_predictor()
+explainer = MachineFailureExplainer(predictor) if predictor is not None else None
 
 
 @app.get(
@@ -135,3 +156,33 @@ def predict_machine_failure(sensor_input: SensorInput) -> PredictionResponse:
         ) from error
 
     return PredictionResponse(**result)
+
+
+@app.post(
+    "/predict/explain",
+    response_model=ExplanationResponse,
+    summary="Explain machine failure prediction",
+    description=(
+        "Return probability-scale SHAP contributions for the failure class "
+        "using the same model and feature engineering as /predict."
+    ),
+)
+def explain_machine_failure(sensor_input: SensorInput) -> ExplanationResponse:
+    if predictor is None or explainer is None:
+        raise HTTPException(
+            status_code=503,
+            detail="The prediction model is not available.",
+        )
+
+    try:
+        input_values: dict[str, Any] = sensor_input.model_dump(by_alias=True)
+        result = explainer.explain(input_values)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    except (ExplainabilityError, RuntimeError, OSError) as error:
+        raise HTTPException(
+            status_code=500,
+            detail="The prediction explanation service could not process the request.",
+        ) from error
+
+    return ExplanationResponse(**result)

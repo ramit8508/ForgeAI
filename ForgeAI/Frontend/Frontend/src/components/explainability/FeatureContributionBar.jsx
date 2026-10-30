@@ -53,10 +53,10 @@ function FeatureContributionBar({
     >
       {/* Row 1: Feature name + sensor value */}
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-xs font-semibold text-foreground tracking-tight">
+        <span className="text-sm font-semibold text-foreground tracking-tight">
           {displayName}
         </span>
-        <span className="font-mono text-xs text-muted-foreground whitespace-nowrap">
+        <span className="font-mono text-sm text-muted-foreground whitespace-nowrap">
           {formattedValue}{unit ? ` ${unit}` : ''}
         </span>
       </div>
@@ -79,7 +79,7 @@ function FeatureContributionBar({
         {/* Direction indicator + SHAP value */}
         <div className="flex items-center gap-1 shrink-0 min-w-[90px] justify-end">
           <span
-            className={`font-mono text-[11px] font-semibold ${
+            className={`font-mono text-xs font-semibold ${
               isPositive ? 'text-amber-400' : 'text-teal-400'
             }`}
           >
@@ -91,7 +91,7 @@ function FeatureContributionBar({
       {/* Row 3: Direction explanation text */}
       <div className="mt-1.5">
         <span
-          className={`text-[10px] font-mono ${
+          className={`text-xs font-mono ${
             isPositive ? 'text-amber-400/70' : 'text-teal-400/70'
           }`}
         >

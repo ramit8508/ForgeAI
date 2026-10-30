@@ -20,7 +20,7 @@ function ExplainabilityDisclaimer() {
         className="shrink-0 text-muted-foreground/70 mt-0.5"
         aria-hidden="true"
       />
-      <p className="text-[11px] text-muted-foreground leading-relaxed">
+      <p className="text-sm text-muted-foreground leading-relaxed">
         <span className="font-semibold text-foreground/80">Model explanation</span> — SHAP
         values describe how input features influenced the model&apos;s prediction. They
         should not be interpreted as direct causal relationships. Model explanations

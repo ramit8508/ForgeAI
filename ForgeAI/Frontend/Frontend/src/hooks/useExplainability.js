@@ -2,7 +2,7 @@
  * ForgeAI — useExplainability Hook
  *
  * Manages the lifecycle of requesting and displaying SHAP-based
- * model explanations for a completed prediction.
+ * model explanations for the locked sensor snapshot of a completed prediction.
  *
  * State machine:
  *   idle → loading → success | unavailable | error

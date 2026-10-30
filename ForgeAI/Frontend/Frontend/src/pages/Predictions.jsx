@@ -187,7 +187,7 @@ function Predictions() {
           tool_wear: Number(values.tool_wear),
         }
 
-        // Lock analyzed snapshot for traceability
+        // Lock the exact five-sensor snapshot used by both prediction and explanation.
         setAnalyzedSnapshot({ ...parsedInput })
 
         const result = await predictionService.predict(parsedInput)

@@ -11,7 +11,7 @@
  *       ↓
  *   explainabilityService (this file)
  *       ↓
- *   POST /predict/explain (future FastAPI endpoint)
+ *       POST /predict/explain
  */
 
 import { postExplanation } from './api/explainability'
@@ -48,6 +48,7 @@ import { ApiClientError } from './api/client'
 const FEATURE_DISPLAY_NAMES = {
   'Air temperature [K]': 'Air Temperature',
   'Process temperature [K]': 'Process Temperature',
+  Temperature_difference: 'Temperature Difference',
   'Rotational speed [rpm]': 'Rotational Speed',
   'Torque [Nm]': 'Torque',
   'Tool wear [min]': 'Tool Wear',
@@ -59,6 +60,7 @@ const FEATURE_DISPLAY_NAMES = {
 const FEATURE_UNITS = {
   'Air temperature [K]': 'K',
   'Process temperature [K]': 'K',
+  Temperature_difference: 'K',
   'Rotational speed [rpm]': 'rpm',
   'Torque [Nm]': 'Nm',
   'Tool wear [min]': 'min',

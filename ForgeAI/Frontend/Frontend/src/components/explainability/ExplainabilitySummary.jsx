@@ -20,28 +20,28 @@ function ExplainabilitySummary({ baseValue, outputValue, featureCount }) {
   return (
     <div className="grid grid-cols-3 gap-3">
       <div className="rounded-md border border-border/50 bg-background/50 p-2.5">
-        <div className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+        <div className="font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
           Base Value
         </div>
-        <div className="mt-1 font-mono text-sm font-semibold text-foreground">
+        <div className="mt-1 font-mono text-base font-semibold text-foreground">
           {formatValue(baseValue)}
         </div>
       </div>
 
       <div className="rounded-md border border-border/50 bg-background/50 p-2.5">
-        <div className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+        <div className="font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
           Output Value
         </div>
-        <div className="mt-1 font-mono text-sm font-semibold text-foreground">
+        <div className="mt-1 font-mono text-base font-semibold text-foreground">
           {formatValue(outputValue)}
         </div>
       </div>
 
       <div className="rounded-md border border-border/50 bg-background/50 p-2.5">
-        <div className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
+        <div className="font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
           Features Analyzed
         </div>
-        <div className="mt-1 font-mono text-sm font-semibold text-foreground">
+        <div className="mt-1 font-mono text-base font-semibold text-foreground">
           {featureCount}
         </div>
       </div>
